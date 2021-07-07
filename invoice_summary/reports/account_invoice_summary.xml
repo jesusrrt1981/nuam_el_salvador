@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <report
+        id="invoice_summary_report"
+        model="account.invoice.summary"
+        string="Resumen de Factura"
+        report_type="qweb-pdf"
+        name="invoice_summary.summary"
+        file="invoice_summary.summary"
+        print_report_name="'Resumen de facturas - {}-{}'.format(object.start, object.end)"
+    />
+
+    <template id="summary">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-set="lang" t-value="o.env.user.lang"/>
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>
+                            Resumen
+                            <span t-field="o.start"/>
+                            -
+                            <span t-field="o.end"/>
+                            -
+                            <span t-field="o.account_type"/>
+                        </h2>
+                        <table class="table table-sm">
+                            <tbody>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Documento</th>
+                                    <th>Cliente</th>
+                                    <th>Monto</th>
+                                    <th>Tipo de factura</th>
+                                    <th>Estado</th>
+                                </tr>
+                                <tr t-foreach="o.get_invoices()" t-as="invoice">
+                                    <td>
+                                        <span t-field="invoice.date_invoice"/>
+                                    </td>
+                                    <td>
+                                        <span t-field="invoice.number"/>
+                                    </td>
+                                    <td>
+                                        <span t-field="invoice.partner_id"/>
+                                    </td>
+                                    <td>
+                                        <span t-field="invoice.amount_total"/>
+                                    </td>
+                                    <td>
+                                        <span t-field="invoice.type"/>
+                                    </td>
+                                    <td>
+                                        <span t-field="invoice.state"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table class="col-6">
+                            <tbody>
+                                <tr>
+                                    <th>Total de facturas</th>
+                                </tr>
+                                <tr t-set = "inv" t-value="o.get_invoices()"/>
+                                <td>
+                                    <t t-set="test1" t-value="sum(x.amount_total for x in inv)"/>
+                                        <span t-esc="test1" t-options="{'widget': 'monetary', 'display_currency': o.env.user.company_id.currency_id}"/>                              
+                                </td>            
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>
